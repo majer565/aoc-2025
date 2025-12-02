@@ -25,6 +25,7 @@ fn read_code() -> Vec<String> {
 
 fn main() {
     // let input: Vec<&str> = vec![
+    //     "L150", "L50",
     //     "L68", "L30", "R48", "L5", "R60", "L55", "L1", "L99", "R14", "L82",
     // ];
     let input: Vec<String> = read_code();

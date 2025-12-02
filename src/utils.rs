@@ -56,30 +56,48 @@ impl Dial {
         match dir {
             Dir::RIGHT => {
                 result = &self.point + steps;
-                if result > 100 {
+                if result > 99 {
                     let over_zero_rotations = result / 100;
+
+                    println!(
+                        "R-ADDED {}, because {} / 100",
+                        over_zero_rotations,
+                        result.abs()
+                    );
                     self.over_zero += over_zero_rotations;
                 }
 
                 self.point = (&self.point + steps).rem_euclid(100);
+                if result < 99 && self.point == 0 {
+                    println!("R-ADDED +1");
+                    self.over_zero += 1;
+                }
             }
             Dir::LEFT => {
                 result = &self.point - steps;
                 if result < 0 && self.point != 0 {
-                    let over_zero_rotations = (result - 100).abs() / 100;
-                    todo!();
+                    let over_zero_rotations = (result.abs() + 100 - 1) / 100;
 
+                    println!(
+                        "L-ADDED {}, because {} / 100",
+                        over_zero_rotations,
+                        result.abs()
+                    );
                     self.over_zero += over_zero_rotations;
                 }
-
+                //55 -> L55
                 self.point = (&self.point - steps).rem_euclid(100);
+                if result <= 0 && self.point == 0 {
+                    println!("L-ADDED +1");
+                    self.over_zero += 1;
+                }
             }
         }
 
-        // println!("New point is: {}", &self.point);
+        println!("New point is: {}", &self.point);
 
-        if self.point == 0 {
-            self.over_zero += 1;
-        }
+        // if self.point == 0 {
+        //     self.over_zero += 1;
+        // }
     }
 }
