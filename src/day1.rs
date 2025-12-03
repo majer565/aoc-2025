@@ -1,3 +1,5 @@
+use std::fs;
+
 pub struct Dial {
     point: i32,
     over_zero: i32,
@@ -16,8 +18,14 @@ impl Dial {
         }
     }
 
-    pub fn get_over_zero(&self) -> i32 {
-        self.over_zero
+    pub fn get_password(&mut self) -> i32 {
+        let input: Vec<String> = self.read_code();
+
+        for step in input {
+            self.rotate(step.as_str());
+        }
+
+        self.get_over_zero()
     }
 
     pub fn rotate(&mut self, code: &str) -> i32 {
@@ -48,6 +56,29 @@ impl Dial {
         }
 
         self.over_zero
+    }
+
+    fn get_over_zero(&self) -> i32 {
+        self.over_zero
+    }
+
+    fn read_code(&self) -> Vec<String> {
+        let file_path = "src/resources/code.txt";
+        let file_result = fs::read_to_string(file_path);
+        let mut code_list = Vec::new();
+
+        match file_result {
+            Ok(file) => {
+                for line in file.lines() {
+                    code_list.push(line.to_string());
+                }
+            }
+            Err(err) => {
+                println!("Error while reading file - {}", err);
+            }
+        }
+
+        code_list
     }
 
     fn rotate_dial(&mut self, steps: i32, dir: Dir) {
