@@ -3,102 +3,43 @@ use std::fs;
 pub struct BatteriesBank;
 
 impl BatteriesBank {
-    pub fn get_password() -> u32 {
-        // let input = BatteriesBank::read_input();
-        let input = vec![String::from("546511191878915")];
-        let mut sum: u32 = 0;
+    pub fn get_password() -> usize {
+        let input = BatteriesBank::read_input();
+        let mut sum: usize = 0;
 
         for bank in input {
-            sum += BatteriesBank::get_joltage_2(bank);
+            sum += BatteriesBank::get_joltage_3(bank);
         }
 
         sum
     }
 
-    fn get_joltage_2(bank: String) -> u32 {
+    fn get_joltage_3(bank: String) -> usize {
         let radix = 10;
-        let mut min_idx = 0;
-        let mut chars_left = bank.len() as u32;
-        let mut out_arr: Vec<u32> = Vec::new();
+        let mut result: usize = 0;
+        let char_arr: Vec<char> = bank.chars().collect::<Vec<_>>();
 
-        for (idx, char_digit) in bank.char_indices() {
-            let digit = match char_digit.to_digit(radix) {
-                Some(d) => d,
-                None => {
-                    println!("Error cannot parse int");
-                    break;
-                }
-            };
+        let mut highest_digit_index: i64 = -1;
 
-            if idx > 0 {
-                if chars_left >= 12 {
-                    min_idx = 0;
-                } else {
-                    min_idx = 12 - chars_left;
-                }
+        for i in 0..12 {
+            let end: i64 = char_arr.len() as i64 - 11 + i as i64;
 
-                let mut insert_at = None;
-                for (idx, &out_digit) in out_arr.iter().enumerate().skip(min_idx as usize) {
-                    if digit > out_digit {
-                        insert_at = Some(idx);
-                        break;
+            let mut highest_digit = 0;
+            for idx in (highest_digit_index + 1)..end {
+                if let Some(char_digit) = char_arr.get(idx as usize) {
+                    if let Some(digit) = char_digit.to_digit(radix) {
+                        if digit > highest_digit {
+                            highest_digit = digit;
+                            highest_digit_index = idx;
+                        }
                     }
-                }
-
-                match insert_at {
-                    Some(idx) => {
-                        // if idx == 0 {
-                        //     for (out_id, out_dig) in out_arr.iter_mut().enumerate().skip(n)
-                        // }
-                        todo!("Insert or push");
-                        out_arr.insert(idx + min_idx as usize, digit);
-                        chars_left -= 1;
-                    }
-                    None => {
-                        out_arr.push(digit);
-                        chars_left -= 1;
-                    }
-                }
-            } else {
-                out_arr.insert(min_idx as usize, digit);
-                println!("Inserted:: {}", &digit);
-                println!("Out:: {:?}", &out_arr);
-            }
-        }
-
-        0
-    }
-
-    fn get_joltage(bank: String) -> u32 {
-        let radix = 10;
-        let mut first: u32 = 0;
-        let mut second: u32 = 0;
-        let mut pik = bank.chars().peekable();
-
-        while let Some(current_char) = pik.next() {
-            let digit = match current_char.to_digit(radix) {
-                Some(d) => d,
-                None => {
-                    println!("Error cannot parse int");
-                    break;
-                }
-            };
-
-            if let Some(&next) = pik.peek() {
-                if digit > first {
-                    first = digit;
-                    second = 0;
-                } else if digit > second {
-                    second = digit;
-                }
-            } else {
-                if digit > second {
-                    second = digit;
                 }
             }
+            result *= 10;
+            result += highest_digit as usize;
         }
 
-        first * 10 + second
+        result
     }
 
     fn read_input() -> Vec<String> {
